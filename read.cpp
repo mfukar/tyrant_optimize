@@ -3,6 +3,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/tokenizer.hpp>
+#include <boost/algorithm/string.hpp>
 #include <cstring>
 #include <vector>
 #include <fstream>
@@ -15,8 +16,7 @@
 
 void load_decks(Decks& decks, Cards& cards)
 {
-    if(boost::filesystem::exists("Custom.txt"))
-    {
+    if(boost::filesystem::exists("Custom.txt")) {
         read_custom_decks(decks, cards, "Custom.txt");
     }
 }
@@ -25,8 +25,7 @@ std::vector<std::pair<std::string, long double>> parse_deck_list(std::string lis
 {
     std::vector<std::pair<std::string, long double>> res;
     boost::tokenizer<boost::char_delimiters_separator<char>> list_tokens{list_string, boost::char_delimiters_separator<char>{false, ";", ""}};
-    for(auto list_token = list_tokens.begin(); list_token != list_tokens.end(); ++list_token)
-    {
+    for(auto list_token = list_tokens.begin(); list_token != list_tokens.end(); ++list_token) {
         boost::tokenizer<boost::char_delimiters_separator<char>> deck_tokens{*list_token, boost::char_delimiters_separator<char>{false, ":", ""}};
         auto deck_token = deck_tokens.begin();
         res.push_back(std::make_pair(*deck_token, 1.0d));
@@ -159,15 +158,12 @@ unsigned read_card_abbrs(Cards& cards, const std::string& filename)
     }
     unsigned num_line(0);
     abbr_file.exceptions(std::ifstream::badbit);
-    try
-    {
-        while(abbr_file && !abbr_file.eof())
-        {
-            std::string abbr_string;
-            getline(abbr_file, abbr_string);
+    try {
+        std::string abbr_string;
+        while (getline(abbr_file, abbr_string)) {
+            boost::algorithm::trim(abbr_string);
             ++num_line;
-            if(abbr_string.size() == 0 || strncmp(abbr_string.c_str(), "//", 2) == 0)
-            {
+            if(abbr_string.size() == 0 || strncmp(abbr_string.c_str(), "//", 2) == 0) {
                 continue;
             }
             std::string abbr_name;
@@ -208,22 +204,19 @@ unsigned read_card_abbrs(Cards& cards, const std::string& filename)
 unsigned read_custom_decks(Decks& decks, Cards& cards, std::string filename)
 {
     std::ifstream decks_file(filename);
-    if(!decks_file.is_open())
-    {
+    if (!decks_file.is_open()) {
         std::cerr << "Error: Custom deck file " << filename << " could not be opened\n";
         return(2);
     }
     unsigned num_line(0);
     decks_file.exceptions(std::ifstream::badbit);
-    try
-    {
-        while(decks_file && !decks_file.eof())
-        {
-            std::string deck_string;
-            getline(decks_file, deck_string);
+    try {
+        std::string deck_string;
+
+        while (getline(decks_file, deck_string)) {
             ++num_line;
-            if(deck_string.size() == 0 || strncmp(deck_string.c_str(), "//", 2) == 0)
-            {
+            boost::algorithm::trim(deck_string);
+            if(deck_string.size() == 0 || strncmp(deck_string.c_str(), "//", 2) == 0) {
                 continue;
             }
             std::string deck_name;
@@ -270,17 +263,14 @@ void read_owned_cards(Cards& cards, std::map<unsigned, unsigned>& owned_cards, s
         return;
     }
     unsigned num_line(0);
-    while(owned_file && !owned_file.eof())
-    {
-        std::string card_spec;
-        getline(owned_file, card_spec);
+    std::string card_spec;
+    while (getline(owned_file, card_spec)) {
+        boost::algorithm::trim(card_spec);
         ++num_line;
-        if(card_spec.size() == 0 || strncmp(card_spec.c_str(), "//", 2) == 0)
-        {
+        if(card_spec.size() == 0 || strncmp(card_spec.c_str(), "//", 2) == 0) {
             continue;
         }
-        try
-        {
+        try {
             unsigned card_id{0};
             unsigned card_num{1};
             char num_sign{0};

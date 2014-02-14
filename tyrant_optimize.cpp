@@ -444,82 +444,73 @@ void thread_evaluate(boost::barrier& main_barrier,
         }
     }
 }
+
 //------------------------------------------------------------------------------
 void print_score_info(const std::pair<std::vector<Results<uint64_t>> , unsigned>& results, std::vector<long double>& factors)
 {
     auto final = compute_score(results, factors);
     std::cout << final.points << " (";
-    for(auto val: results.first)
-    {
-        switch(optimization_mode)
-        {
+    for(auto val: results.first) {
+        switch(optimization_mode) {
             case OptimizationMode::raid:
                 std::cout << val.points << " ";
                 break;
             default:
-                std::cout << val.points / 100 << " ";
+                std::cout << std::fixed << std::setprecision(4) << val.points / 100 << " ";
                 break;
         }
     }
     std::cout << "/ " << results.second << ")" << std::endl;
 }
+
 //------------------------------------------------------------------------------
 void print_results(const std::pair<std::vector<Results<uint64_t>> , unsigned>& results, std::vector<long double>& factors)
 {
     auto final = compute_score(results, factors);
 
-    if(optimization_mode == OptimizationMode::raid)
-    {
+    if(optimization_mode == OptimizationMode::raid) {
         std::cout <<  "win%: " << (final.wins + final.draws) * 100.0 << " (";
-        for(auto val: results.first)
-        {
+
+        for(auto val: results.first) {
             std::cout << val.wins + val.draws << " ";
         }
         std::cout << "/ " << results.second << ")" << std::endl;
     }
 
     std::cout << (optimization_mode == OptimizationMode::raid ? "slay%: " : "win%: ") << final.wins * 100.0 << " (";
-    for(auto val: results.first)
-    {
+    for(auto val: results.first) {
         std::cout << val.wins << " ";
     }
     std::cout << "/ " << results.second << ")" << std::endl;
 
-    if(optimization_mode != OptimizationMode::raid)
-    {
+    if (optimization_mode != OptimizationMode::raid) {
         std::cout << "stall%: " << final.draws * 100.0 << " (";
-        for(auto val: results.first)
-        {
+        for(auto val: results.first) {
             std::cout << val.draws << " ";
         }
         std::cout << "/ " << results.second << ")" << std::endl;
     }
 
     std::cout << "loss%: " << final.losses * 100.0 << " (";
-    for(auto val: results.first)
-    {
+    for(auto val: results.first) {
         std::cout << val.losses << " ";
     }
     std::cout << "/ " << results.second << ")" << std::endl;
 
-    switch(optimization_mode)
-    {
+    switch(optimization_mode) {
         case OptimizationMode::raid:
             std::cout << "ard: " << final.points << " (";
-            for(auto val: results.first)
-            {
+            for(auto val: results.first) {
                 std::cout << val.points << " ";
             }
             std::cout << "/ " << results.second << ")" << std::endl;
-            if (show_stdev)
-            {
+            if (show_stdev) {
                 std::cout << "stdev: " << sqrt(final.sq_points - final.points * final.points) << std::endl;
             }
             break;
         case OptimizationMode::achievement:
             std::cout << "achievement%: " << final.points << " (";
-            for(auto val: results.first)
-            {
+            for(auto val: results.first) {
                 std::cout << val.points / 100 << " ";
             }
             std::cout << "/ " << results.second << ")" << std::endl;
@@ -528,15 +519,14 @@ void print_results(const std::pair<std::vector<Results<uint64_t>> , unsigned>& r
             break;
     }
 }
+
 //------------------------------------------------------------------------------
 void print_deck_inline(const unsigned deck_cost, const Results<long double> score, const Card *commander, std::vector<const Card*> cards, bool is_ordered)
 {
-    if(fund > 0)
-    {
+    if(fund > 0) {
         std::cout << "$" << deck_cost << " ";
     }
-    switch(optimization_mode)
-    {
+    switch(optimization_mode) {
         case OptimizationMode::raid:
             std::cout << "(" << (score.wins + score.draws) * 100 << "% win, " << score.wins * 100.0 << "% slay";
             if (show_stdev) {
@@ -554,22 +544,16 @@ void print_deck_inline(const unsigned deck_cost, const Results<long double> scor
             break;
     }
     std::cout << score.points << ": " << commander->m_name;
-    if(!is_ordered)
-    {
+    if(!is_ordered) {
         std::sort(cards.begin(), cards.end(), [](const Card* a, const Card* b) { return a->m_id < b->m_id; });
     }
     std::string last_name;
     unsigned num_repeat(0);
-    for(const Card* card: cards)
-    {
-        if(card->m_name == last_name)
-        {
+    for(const Card* card: cards) {
+        if(card->m_name == last_name) {
             ++ num_repeat;
-        }
-        else
-        {
-            if(num_repeat > 1)
-            {
+        } else {
+            if(num_repeat > 1) {
                 std::cout << " #" << num_repeat;
             }
             std::cout << ", " << card->m_name;
@@ -577,8 +561,7 @@ void print_deck_inline(const unsigned deck_cost, const Results<long double> scor
             num_repeat = 1;
         }
     }
-    if(num_repeat > 1)
-    {
+    if(num_repeat > 1) {
         std::cout << " #" << num_repeat;
     }
     std::cout << std::endl;
@@ -604,8 +587,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     unsigned long skipped_simulations = 0;
-    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score.points - target_score < -1e-9; slot_i = (slot_i + 1) % std::min<unsigned>(max_deck_len, best_cards.size() + 1))
-    {
+    for(unsigned slot_i(0), dead_slot(0); (deck_has_been_improved || slot_i != dead_slot) && best_score.points - target_score < -1e-9; slot_i = (slot_i + 1) % std::min<unsigned>(max_deck_len, best_cards.size() + 1)) {
         if(card_marks.count(slot_i)) { continue; }
         if(deck_has_been_improved)
         {
@@ -638,7 +620,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
                         best_score = current_score;
                         best_commander = commander_candidate;
                         deck_has_been_improved = true;
-                        std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards, false) << " commander -> " << card_id_name(commander_candidate) << ": ";
+                        std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards, false) << " commander -> " << card_id_name(commander_candidate) << ": " << std::endl;
                         print_score_info(compare_results, proc.factors);
                         print_deck_inline(deck_cost, best_score, best_commander, best_cards, false);
                     }
@@ -688,7 +670,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
                 if(current_score.points > best_score.points)
                 {
                     std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards, false) << " " << card_id_name(slot_i < best_cards.size() ? best_cards[slot_i] : NULL) <<
-                        " -> " << card_id_name(card_candidate) << ": ";
+                        " -> " << card_id_name(card_candidate) << ": " << std::endl;
                     // Then update best score/slot, print stuff
                     best_score = current_score;
                     best_cards = d1->cards;
@@ -733,46 +715,42 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
     std::mt19937 re(time(NULL));
     bool deck_has_been_improved = true;
     unsigned long skipped_simulations = 0;
-    for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score.points - target_score < -1e-9; from_slot = (from_slot + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1))
-    {
-        if(deck_has_been_improved)
-        {
+    for(unsigned from_slot(0), dead_slot(0); (deck_has_been_improved || from_slot != dead_slot) && best_score.points - target_score < -1e-9; from_slot = (from_slot + 1) % std::min<unsigned>(max_deck_len, d1->cards.size() + 1)) {
+        if(deck_has_been_improved) {
             dead_slot = from_slot;
             deck_has_been_improved = false;
         }
-        if(!card_marks.count(-1))
-        {
+
+        if(!card_marks.count(-1)) {
             for(const Card* commander_candidate: proc.cards.player_commanders)
             {
-                if(best_score.points - target_score > -1e-9) { break; }
+                if (best_score.points - target_score > -1e-9) { break; }
                 // Various checks to check if the card is accepted
                 assert(commander_candidate->m_type == CardType::commander);
-                if(commander_candidate->m_name == best_commander->m_name) { continue; }
+                if (commander_candidate->m_name == best_commander->m_name) { continue; }
                 // Place it in the deck
                 d1->commander = commander_candidate;
                 auto &&cur_deck = d1->card_ids<std::vector<unsigned>>();
-                if(evaluated_decks.count(cur_deck) == 0)
-                {
+                if (evaluated_decks.count(cur_deck) == 0) {
                     deck_cost = get_deck_cost(d1, proc.cards);
-                    if(deck_cost > fund) { continue; }
+                    if (deck_cost > fund) {
+                        continue;
+                    }
                     // Evaluate new deck
                     auto compare_results = proc.compare(num_iterations, best_score.points);
                     current_score = compute_score(compare_results, proc.factors);
                     evaluated_decks[cur_deck] = compare_results.second;
                     // Is it better ?
-                    if(current_score.points > best_score.points)
-                    {
+                    if (current_score.points > best_score.points) {
                         // Then update best score/commander, print stuff
                         best_score = current_score;
                         best_commander = commander_candidate;
                         deck_has_been_improved = true;
-                        std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards, true) << " commander -> " << card_id_name(commander_candidate) << ": ";
+                        std::cout << "Deck improved: " << deck_hash(commander_candidate, best_cards, true) << " commander -> " << card_id_name(commander_candidate) << ": " << std::endl;
                         print_score_info(compare_results, proc.factors);
                         print_deck_inline(deck_cost, best_score, best_commander, best_cards, true);
                     }
-                }
-                else
-                {
+                } else {
                     skipped_simulations += evaluated_decks[cur_deck];
                 }
             }
@@ -820,7 +798,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
                     {
                         // Then update best score/slot, print stuff
                         std::cout << "Deck improved: " << deck_hash(best_commander, d1->cards, true) << " " << from_slot << " " << card_id_name(from_slot < best_cards.size() ? best_cards[from_slot] : NULL) <<
-                            " -> " << to_slot << " " << card_id_name(card_candidate) << ": ";
+                            " -> " << to_slot << " " << card_id_name(card_candidate) << ": " << std::endl;
                         best_score = current_score;
                         best_cards = d1->cards;
                         deck_has_been_improved = true;
@@ -845,9 +823,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
                         }
                         card_marks = new_card_marks;
                     }
-                }
-                else
-                {
+                } else {
                     skipped_simulations += evaluated_decks[cur_deck];
                 }
             }

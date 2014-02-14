@@ -11,7 +11,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //------------------------------------------------------------------------------
-//#define NDEBUG
 #define BOOST_THREAD_USE_LIB
 #include <cassert>
 #include <cstring>
@@ -36,7 +35,6 @@
 #include "sim.h"
 #include "tyrant.h"
 #include "xml.h"
-//#include "timer.hpp"
 
 namespace {
     gamemode_t gamemode{fight};

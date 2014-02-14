@@ -281,7 +281,7 @@ std::string CardStatus::description()
         if(m_blitzing) { desc += "(blitzing)"; }
     }
     if(m_chaosed) { desc += ", chaosed"; }
-    if(m_diseased) { desc += ", diseaseded"; }
+    if(m_diseased) { desc += ", diseased"; }
     if(m_frozen) { desc += ", frozen"; }
     if(m_immobilized) { desc += ", immobilized"; }
     if(m_infused) { desc += ", infused"; }
@@ -307,32 +307,25 @@ inline void print_achievement_results(Field* fd)
         return;
     }
     _DEBUG_MSG(1, "Achievement:\n");
-    for(auto i : fd->achievement.skill_used)
-    {
+    for(auto i : fd->achievement.skill_used) {
         _DEBUG_MSG(1, "  Use skills: %s %u%s? %s\n", skill_names[i.first].c_str(), fd->achievement_counter[i.second], fd->achievement.req_counter[i.second].str().c_str(), fd->achievement.req_counter[i.second].check(fd->achievement_counter[i.second]) ? "Yes" : "No");
     }
-    for(auto i : fd->achievement.unit_played)
-    {
+    for(auto i : fd->achievement.unit_played) {
         _DEBUG_MSG(1, "  Play units: %s %u%s? %s\n", fd->cards.by_id(i.first)->m_name.c_str(), fd->achievement_counter[i.second], fd->achievement.req_counter[i.second].str().c_str(), fd->achievement.req_counter[i.second].check(fd->achievement_counter[i.second]) ? "Yes" : "No");
     }
-    for(auto i : fd->achievement.unit_type_played)
-    {
+    for(auto i : fd->achievement.unit_type_played) {
         _DEBUG_MSG(1, "  Play units of type: %s %u%s? %s\n", cardtype_names[i.first].c_str(), fd->achievement_counter[i.second], fd->achievement.req_counter[i.second].str().c_str(), fd->achievement.req_counter[i.second].check(fd->achievement_counter[i.second]) ? "Yes" : "No");
     }
-    for(auto i : fd->achievement.unit_faction_played)
-    {
+    for(auto i : fd->achievement.unit_faction_played) {
         _DEBUG_MSG(1, "  Play units of faction: %s %u%s? %s\n", faction_names[i.first].c_str(), fd->achievement_counter[i.second], fd->achievement.req_counter[i.second].str().c_str(), fd->achievement.req_counter[i.second].check(fd->achievement_counter[i.second]) ? "Yes" : "No");
     }
-    for(auto i : fd->achievement.unit_rarity_played)
-    {
+    for(auto i : fd->achievement.unit_rarity_played) {
         _DEBUG_MSG(1, "  Play units of rarity: %s %u%s? %s\n", rarity_names[i.first].c_str(), fd->achievement_counter[i.second], fd->achievement.req_counter[i.second].str().c_str(), fd->achievement.req_counter[i.second].check(fd->achievement_counter[i.second]) ? "Yes" : "No");
     }
-    for(auto i : fd->achievement.unit_type_killed)
-    {
+    for(auto i : fd->achievement.unit_type_killed) {
         _DEBUG_MSG(1, "  Kill units of type: %s %u%s? %s\n", cardtype_names[i.first].c_str(), fd->achievement_counter[i.second], fd->achievement.req_counter[i.second].str().c_str(), fd->achievement.req_counter[i.second].check(fd->achievement_counter[i.second]) ? "Yes" : "No");
     }
-    for(auto i : fd->achievement.misc_req)
-    {
+    for(auto i : fd->achievement.misc_req) {
         _DEBUG_MSG(1, "  %s %u%s? %s\n", achievement_misc_req_names[i.first].c_str(), fd->achievement_counter[i.second], fd->achievement.req_counter[i.second].str().c_str(), fd->achievement.req_counter[i.second].check(fd->achievement_counter[i.second]) ? "Yes" : "No");
     }
 #endif

@@ -1,6 +1,8 @@
 *.txt
 *.xml
 *.sh
+cscope.out
+tags
 ownedcards.txt
 obj/
 tyrant_optimize

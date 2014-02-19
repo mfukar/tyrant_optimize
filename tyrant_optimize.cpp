@@ -1066,11 +1066,10 @@ void usage(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
-    if(argc == 1) { usage(argc, argv); return(0); }
-    if(argc <= 2 && strcmp(argv[1], "-version") == 0)
-    {
+    if(argc == 1) { usage(argc, argv); return -1; }
+    if(argc <= 2 && strcmp(argv[1], "--version") == 0) {
         std::cout << "Tyrant Optimizer " << TYRANT_OPTIMIZER_VERSION << std::endl;
-        return(0);
+        return 0;
     }
     unsigned num_threads = 4;
     DeckStrategy::DeckStrategy att_strategy(DeckStrategy::random);
@@ -1398,10 +1397,8 @@ int main(int argc, char** argv)
 
     {
         //ScopeClock timer;
-        for(auto op: todo)
-        {
-            switch(std::get<2>(op))
-            {
+        for(auto op: todo) {
+            switch (std::get<2>(op)) {
             case simulate: {
                 auto results = p.evaluate(std::get<0>(op));
                 print_results(results, p.factors);
@@ -1464,5 +1461,5 @@ int main(int argc, char** argv)
             }
         }
     }
-    return(0);
+    return 0;
 }

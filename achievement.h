@@ -35,14 +35,14 @@ public:
     // predict whether the monotonic increasing counter will be met: +1: true; 0: unknown; -1: false.
     int predict_monoinc(unsigned value) const
     {
-        switch(m_comparator)
-        {
+        switch (m_comparator) {
         case equal:
         case less_equal: return value <= m_target ? 0 : -1;
         case great_equal: return value < m_target ? 0 : +1;
         default: throw;
         }
     }
+
     std::string str() const
     {
         std::stringstream ios;

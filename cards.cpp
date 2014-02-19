@@ -21,14 +21,12 @@ std::string to_string(T val)
 std::string simplify_name(const std::string& card_name)
 {
     std::string simple_name;
-    for(auto c : card_name)
-    {
-        if(!strchr(";:, \"'-", c))
-        {
+    for(auto c : card_name) {
+        if(!strchr(";:, \"'-", c)) {
             simple_name += ::tolower(c);
         }
     }
-    return(simple_name);
+    return simple_name;
 }
 
 std::list<std::string> get_abbreviations(const std::string& name)

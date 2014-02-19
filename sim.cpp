@@ -26,21 +26,24 @@ unsigned debug_cached(0);
 bool debug_line(false);
 std::string debug_str;
 #ifndef NDEBUG
-#define _DEBUG_MSG(v, format, args...)                                  \
-    {                                                                   \
-        if(__builtin_expect(debug_print >= v, false))                   \
-        {                                                               \
-            if(debug_line) { printf("%i - " format, __LINE__ , ##args); }      \
-            else if(debug_cached) {                                     \
-                char buf[4096];                                         \
-                snprintf(buf, sizeof(buf), format, ##args);             \
-                debug_str += buf;                                       \
-            }                                                           \
-            else { printf(format, ##args); }                            \
-            std::cout << std::flush;                                    \
-        }                                                               \
+    #define _DEBUG_MSG(v, format, args...)                  \
+    {                                                       \
+        if(__builtin_expect(debug_print >= v, false))       \
+        {                                                   \
+            if(debug_line) {                                \
+                printf("%i - " format, __LINE__ , ##args);  \
+            }                                               \
+            else if(debug_cached) {                         \
+                char buf[4096];                             \
+                snprintf(buf, sizeof(buf), format, ##args); \
+                debug_str += buf;                           \
+            }                                               \
+            else { printf(format, ##args); }                \
+            std::cout << std::flush;                        \
+        }                                                   \
     }
-#define _DEBUG_SELECTION(format, args...)                               \
+
+    #define _DEBUG_SELECTION(format, args...)                           \
     {                                                                   \
         if(__builtin_expect(debug_print >= 2, 0))                       \
         {                                                               \
@@ -49,8 +52,8 @@ std::string debug_str;
         }                                                               \
     }
 #else
-#define _DEBUG_MSG(v, format, args...)
-#define _DEBUG_SELECTION(format, args...)
+    #define _DEBUG_MSG(v, format, args...)
+    #define _DEBUG_SELECTION(format, args...)
 #endif
 //------------------------------------------------------------------------------
 inline std::string status_description(CardStatus* status)
@@ -62,21 +65,21 @@ template <typename CardsIter, typename Functor>
 inline unsigned Field::make_selection_array(CardsIter first, CardsIter last, Functor f)
 {
     this->selection_array.clear();
-    for(auto c = first; c != last; ++c)
-    {
-        if (f(*c))
-        {
+    for(auto c = first; c != last; ++c) {
+        if (f(*c)) {
             this->selection_array.push_back(*c);
         }
     }
-    return(this->selection_array.size());
+    return this->selection_array.size();
 }
 inline void Field::print_selection_array()
 {
-    for(auto c: this->selection_array)
-    {
+#ifndef NDEBUG
+    for(auto c: this->selection_array) {
         _DEBUG_MSG(2, "+ %s\n", status_description(c).c_str());
     }
+#endif
+    return;
 }
 //------------------------------------------------------------------------------
 CardStatus::CardStatus(const Card* card) :
@@ -152,17 +155,13 @@ inline int attack_power(CardStatus* att)
 //------------------------------------------------------------------------------
 std::string skill_description(const Cards& cards, const SkillSpec& s)
 {
-    switch(std::get<0>(s))
-    {
+    switch(std::get<0>(s)) {
     case summon:
-        if(std::get<1>(s) == 0)
-        {
+        if (std::get<1>(s) == 0) {
             // Summon X
             return(skill_names[std::get<0>(s)] + " X" +
                     skill_activation_modifier_names[std::get<4>(s)]);
-        }
-        else
-        {
+        } else {
             return(skill_names[std::get<0>(s)] +
                     " " + cards.by_id(std::get<1>(s))->m_name.c_str() +
                     skill_activation_modifier_names[std::get<4>(s)]);
@@ -346,7 +345,7 @@ unsigned turn_limit{50};
 //------------------------------------------------------------------------------
 inline unsigned opponent(unsigned player)
 {
-    return((player + 1) % 2);
+    return (player + 1) % 2;
 }
 //------------------------------------------------------------------------------
 SkillSpec apply_augment(const CardStatus* status, const SkillSpec& s)

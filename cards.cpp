@@ -29,21 +29,6 @@ std::string simplify_name(const std::string& card_name)
     return simple_name;
 }
 
-std::list<std::string> get_abbreviations(const std::string& name)
-{
-    std::list<std::string> abbr_list;
-    boost::tokenizer<boost::char_delimiters_separator<char>> word_token{name, boost::char_delimiters_separator<char>{false, " ", ""}};
-    std::string initial;
-    auto token_iter = word_token.begin();
-    for(; token_iter != word_token.end(); ++token_iter)
-    {
-        abbr_list.push_back(simplify_name(std::string{token_iter->begin(), token_iter->end()}));
-        initial += *token_iter->begin();
-    }
-    abbr_list.push_back(simplify_name(initial));
-    return(abbr_list);
-}
-
 //------------------------------------------------------------------------------
 Cards::~Cards()
 {
@@ -122,18 +107,6 @@ void Cards::organize()
     }
     for(Card* card: cards)
     {
-        // generate abbreviations
-        if(card->m_hidden == 0)
-        {
-            for(auto&& abbr_name : get_abbreviations(card->m_name))
-            {
-                if(abbr_name.length() > 1 && player_cards_by_name.find({abbr_name, 0}) == player_cards_by_name.end())
-                {
-                    player_cards_abbr[abbr_name] = card->m_name;
-                }
-            }
-        }
-
         // update proto_id and upgraded_id
         if(card->m_set == 5002)
         {

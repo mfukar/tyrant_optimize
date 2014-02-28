@@ -79,7 +79,6 @@ Iterator read_token(Iterator it, Iterator it_end, Functor f, Token& token)
 void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num, char& num_sign, char& mark)
 {
     /* TODO: Can be simplified. */
-    static std::set<std::string> recognized_abbr;
     auto card_spec_iter = card_spec.begin();
     card_id = 0;
     card_num = 1;
@@ -96,14 +95,6 @@ void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_
     }
     // If card name is not found, try find card id quoted in '[]' in name, ignoring other characters.
     std::string simple_name{simplify_name(card_name)};
-    auto abbr_it = cards.player_cards_abbr.find(simple_name);
-    if (abbr_it != cards.player_cards_abbr.end()) {
-        if (recognized_abbr.count(card_name) == 0) {
-            std::cout << "Recognize abbreviation " << card_name << ": " << abbr_it->second << std::endl;
-            recognized_abbr.insert(card_name);
-        }
-        simple_name = simplify_name(abbr_it->second);
-    }
     auto card_it = cards.player_cards_by_name.find({simple_name, 0});
     if (card_it == cards.player_cards_by_name.end()) {
         card_it = cards.player_cards_by_name.find({simple_name, 1});
@@ -126,57 +117,6 @@ void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_
     if (card_id == 0) {
         throw std::runtime_error("Unknown card: " + card_name);
     }
-}
-
-unsigned read_card_abbrs(Cards& cards, const std::string& filename)
-{
-    if (!boost::filesystem::exists(filename)) {
-        return 0;
-    }
-    std::ifstream abbr_file(filename);
-    if (!abbr_file.is_open()) {
-        std::cerr << "Error: Card abbreviation file " << filename << " could not be opened\n";
-        return 2;
-    }
-    unsigned num_line(0);
-    abbr_file.exceptions(std::ifstream::badbit);
-    try {
-        std::string abbr_string;
-        while (getline(abbr_file, abbr_string)) {
-            boost::algorithm::trim(abbr_string);
-            ++num_line;
-            if(abbr_string.size() == 0 || strncmp(abbr_string.c_str(), "//", 2) == 0) {
-                continue;
-            }
-            std::string abbr_name;
-            auto abbr_string_iter = read_token(abbr_string.begin(), abbr_string.end(), [](char c){return(c == ':');}, abbr_name);
-            if(abbr_string_iter == abbr_string.end() || abbr_name.empty())
-            {
-                std::cerr << "Error in custom deck file " << filename << " at line " << num_line << ", could not read the deck name.\n";
-                continue;
-            }
-            abbr_string_iter = advance_until(abbr_string_iter + 1, abbr_string.end(), [](const char& c){return(c != ' ');});
-            if(cards.player_cards_by_name.find({abbr_name, 0}) != cards.player_cards_by_name.end())
-            {
-                std::cerr << "Warning in card abbreviation file " << filename << " at line " << num_line << ": ignored because the name has been used by an existing card." << std::endl;
-            }
-            else
-            {
-                cards.player_cards_abbr[abbr_name] = std::string{abbr_string_iter, abbr_string.end()};
-            }
-        }
-    }
-    catch (std::exception& e)
-    {
-        std::cerr << "Exception while parsing the card abbreviation file " << filename;
-        if(num_line > 0)
-        {
-            std::cerr << " at line " << num_line;
-        }
-        std::cerr << ": " << e.what() << ".\n";
-        return(3);
-    }
-    return(0);
 }
 
 

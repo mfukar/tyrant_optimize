@@ -1076,7 +1076,6 @@ int main(int argc, char** argv)
     DeckStrategy::DeckStrategy def_strategy(DeckStrategy::random);
     Cards cards;
     read_cards(cards);
-    read_card_abbrs(cards, "cardabbrs.txt");
     Decks decks;
     Achievement achievement;
     load_decks_xml(decks, cards);

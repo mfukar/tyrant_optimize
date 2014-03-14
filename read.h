@@ -5,9 +5,8 @@
 #include <string>
 #include <vector>
 
-class Cards;
-class Decks;
-class Deck;
+#include "library.h"
+#include "deck.h"
 
 void parse_card_spec(const Cards& cards, std::string& card_spec, unsigned& card_id, unsigned& card_num, char& num_sign, char& mark);
 void load_decks(Decks& decks, Cards& cards);

@@ -6,8 +6,7 @@
 #include <sstream>
 #include <stdexcept>
 
-#include "card.h"
-#include "cards.h"
+#include "library.h"
 #include "read.h"
 
 template<class RandomAccessIterator, class UniformRandomNumberGenerator>

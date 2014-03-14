@@ -7,8 +7,7 @@
 #include <sstream>
 #include <vector>
 
-#include "card.h"
-#include "cards.h"
+#include "library.h"
 #include "deck.h"
 #include "achievement.h"
 

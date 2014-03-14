@@ -1,17 +1,13 @@
-#include "xml.h"
-
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <map>
 #include <stdexcept>
 #include <algorithm>
+
 #include "rapidxml.hpp"
-#include "card.h"
-#include "cards.h"
-#include "deck.h"
-#include "achievement.h"
 #include "tyrant.h"
+#include "xml.h"
 //---------------------- $20 cards.xml parsing ---------------------------------
 // Sets: 1 enclave; 2 nexus; 3 blight; 4 purity; 5 homeworld;
 // 6 phobos; 7 phobos aftermath; 8 awakening

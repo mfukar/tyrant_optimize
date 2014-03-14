@@ -3,9 +3,9 @@
 
 #include <string>
 
-class Cards;
-class Decks;
-class Achievement;
+#include "library.h"
+#include "deck.h"
+#include "achievement.h"
 
 void load_decks_xml(Decks& decks, const Cards& cards);
 void read_cards(Cards& cards);

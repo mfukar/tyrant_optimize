@@ -27,8 +27,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/barrier.hpp>
 #include <boost/math/distributions/binomial.hpp>
-#include "card.h"
-#include "cards.h"
+#include "library.h"
 #include "deck.h"
 #include "achievement.h"
 #include "read.h"

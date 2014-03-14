@@ -1,5 +1,3 @@
-#include "cards.h"
-
 #include <boost/tokenizer.hpp>
 #include <map>
 #include <sstream>
@@ -7,8 +5,8 @@
 #include <cstring>
 #include <list>
 
-#include "card.h"
 #include "tyrant.h"
+#include "library.h"
 
 template<typename T>
 std::string to_string(T val)

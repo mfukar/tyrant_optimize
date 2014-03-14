@@ -1,11 +1,11 @@
-#ifndef CARDS_H_INCLUDED
-#define CARDS_H_INCLUDED
+#ifndef LIBRARY_H_INCLUDED
+#define LIBRARY_H_INCLUDED
 
 #include <map>
 #include <string>
 #include <vector>
 
-class Card;
+#include "card.h"
 
 struct Cards
 {

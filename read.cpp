@@ -10,9 +10,6 @@
 #include <iostream>
 #include <exception>
 
-#include "card.h"
-#include "cards.h"
-#include "deck.h"
 
 void load_decks(Decks& decks, Cards& cards)
 {

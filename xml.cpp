@@ -51,11 +51,10 @@ unsigned skill_value(xml_node<>* skill)
 {
     unsigned value(0);
     xml_attribute<>* x(skill->first_attribute("x"));
-    if(x)
-    {
+    if(x) {
         value = atoi(x->value());
     }
-    return(value);
+    return value;
 }
 
 template<Skill skill>

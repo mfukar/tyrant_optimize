@@ -75,29 +75,23 @@ void handle_skill(xml_node<>* node, Card* card)
 //------------------------------------------------------------------------------
 void load_decks_xml(Decks& decks, const Cards& cards)
 {
-    try
-    {
+    try {
         read_missions(decks, cards, "missions.xml");
     }
-    catch(const rapidxml::parse_error& e)
-    {
-        std::cout << "\nException while loading decks from file missions.xml\n";
+    catch(const rapidxml::parse_error& e) {
+        std::cout << "Failed to parse missions.xml\n";
     }
-    try
-    {
+    try {
         read_raids(decks, cards, "raids.xml");
     }
-    catch(const rapidxml::parse_error& e)
-    {
-        std::cout << "\nException while loading decks from file raids.xml\n";
+    catch(const rapidxml::parse_error& e) {
+        std::cout << "Failed to parse raids.xml\n";
     }
-    try
-    {
+    try {
         read_quests(decks, cards, "quests.xml");
     }
-    catch(const rapidxml::parse_error& e)
-    {
-        std::cout << "\nException while loading decks from file quests.xml\n";
+    catch(const rapidxml::parse_error& e) {
+        std::cout << "Failed to parse quests.xml\n";
     }
 }
 
@@ -105,9 +99,8 @@ void load_decks_xml(Decks& decks, const Cards& cards)
 void parse_file(const char* filename, std::vector<char>& buffer, xml_document<>& doc)
 {
     std::ifstream cards_stream(filename, std::ios::binary);
-    if(!cards_stream.good())
-    {
-        std::cout << "Warning: The file '" << filename << "' does not exist. Proceeding without reading from this file.\n";
+    if(!cards_stream.good()) {
+        std::cout << "[-] File <" << filename << "> not found. Skipping..\n";
         buffer.resize(1);
         buffer[0] = 0;
         doc.parse<0>(&buffer[0]);
@@ -121,18 +114,19 @@ void parse_file(const char* filename, std::vector<char>& buffer, xml_document<>&
     cards_stream.read(&buffer[0],length);
     // zero-terminate
     buffer[length] = '\0';
-    try
-    {
+    try {
         doc.parse<0>(&buffer[0]);
     }
-    catch(rapidxml::parse_error& e)
-    {
+    catch(rapidxml::parse_error& e) {
         std::cerr << "Parse error exception.\n";
         std::cout << e.what();
         throw(e);
     }
 }
-//------------------------------------------------------------------------------
+
+/**
+ * @return true if card list was imported properly, false if an error is encountered.
+ */
 void read_cards(Cards& cards)
 {
     std::vector<char> buffer;
@@ -140,9 +134,8 @@ void read_cards(Cards& cards)
     parse_file("cards.xml", buffer, doc);
     xml_node<>* root = doc.first_node();
 
-    if(!root)
-    {
-        return;
+    if(!root) {
+        return false;
     }
 
     bool ai_only(false);
@@ -350,6 +343,7 @@ void read_cards(Cards& cards)
     //   std::cout << "set " << counts.first << " (" << sets[counts.first] << ")" << ": " << counts.second << "\n";
     // }
     // std::cout << "nb mission cards: " << cards.mission_cards.size() << "\n";
+    return true;
 }
 //------------------------------------------------------------------------------
 Deck* read_deck(Decks& decks, const Cards& cards, xml_node<>* node, DeckType::DeckType decktype, unsigned id, std::string& deck_name)

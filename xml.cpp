@@ -127,7 +127,7 @@ void parse_file(const char* filename, std::vector<char>& buffer, xml_document<>&
 /**
  * @return true if card list was imported properly, false if an error is encountered.
  */
-void read_cards(Cards& cards)
+bool read_cards(Cards& cards)
 {
     std::vector<char> buffer;
     xml_document<> doc;

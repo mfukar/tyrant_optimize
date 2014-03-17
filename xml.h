@@ -8,7 +8,7 @@
 #include "achievement.h"
 
 void load_decks_xml(Decks& decks, const Cards& cards);
-void read_cards(Cards& cards);
+bool read_cards(Cards& cards);
 void read_missions(Decks& decks, const Cards& cards, std::string filename);
 void read_raids(Decks& decks, const Cards& cards, std::string filename);
 void read_quests(Decks& decks, const Cards& cards, std::string filename);

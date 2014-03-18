@@ -1129,9 +1129,10 @@ int main(int argc, char** argv)
         def_decks_factors.push_back(deck_parsed.second);
     }
 
-    std::map<std::string, int> effect_map;
-    for (size_t index(0); index < Effect::num_effects; ++index) {
-        effect_map[effect_names[index]] = index;
+    /* Map effect names to their IDs: */
+    std::map<std::string, Effect> effect_map;
+    for (size_t id(0); id < Effect::num_effects; ++id) {
+        effect_map[effect_names[id]] = static_cast<Effect>(id);
     }
 
     for(int argIndex(3); argIndex < argc; ++argIndex)
@@ -1176,12 +1177,10 @@ int main(int argc, char** argv)
             }
             argIndex += 1;
         }
-        else if(strcmp(argv[argIndex], "-c") == 0)
-        {
+        else if(strcmp(argv[argIndex], "-c") == 0) {
             keep_commander = true;
         }
-        else if(strcmp(argv[argIndex], "-e") == 0)
-        {
+        else if(strcmp(argv[argIndex], "-e") == 0) {
             std::string arg_effect(argv[argIndex + 1]);
             auto x = effect_map.find(arg_effect);
             if(x == effect_map.end()) {
@@ -1189,7 +1188,7 @@ int main(int argc, char** argv)
                 print_available_effects();
                 return -6;
             }
-            effect = static_cast<enum Effect>(x->second);
+            effect = x->second;
             argIndex += 1;
         }
         else if(strcmp(argv[argIndex], "-fixedlen") == 0)

@@ -86,7 +86,7 @@ enum DeckType {
 extern std::string decktype_names[DeckType::num_decktypes];
 
 enum Effect {
-    none,
+    none = 0,
     time_surge,
     copycat,
     quicksilver,

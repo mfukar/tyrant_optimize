@@ -69,8 +69,7 @@ std::string card_id_name(const Card* card)
 Deck* find_deck(Decks& decks, const Cards& cards, std::string deck_name)
 {
     auto it = decks.by_name.find(deck_name);
-    if(it != decks.by_name.end())
-    {
+    if(it != decks.by_name.end()) {
         it->second->resolve(cards);
         return(it->second);
     }
@@ -1004,9 +1003,8 @@ void print_available_decks(const Decks& decks, bool allow_card_pool)
 void print_available_effects()
 {
     std::cout << "Available effects:" << std::endl;
-    for(int i(1); i < Effect::num_effects; ++ i)
-    {
-        std::cout << i << " \"" << effect_names[i] << "\"" << std::endl;
+    for(int i(1); i < Effect::num_effects; ++ i) {
+        std::cout << i << ") \"" << effect_names[i] << "\"" << std::endl;
     }
 }
 
@@ -1087,46 +1085,39 @@ int main(int argc, char** argv)
     bool fixed_len{false};
     std::vector<std::tuple<unsigned, unsigned, Operation>> todo;
 
-    try
-    {
+    try {
         att_deck = find_deck(decks, cards, att_deck_name);
     }
-    catch(const std::runtime_error& e)
-    {
+    catch(const std::runtime_error& e) {
         std::cerr << "Error: Deck " << att_deck_name << ": " << e.what() << std::endl;
         return(5);
     }
-    if(att_deck == nullptr)
-    {
+    if(att_deck == nullptr) {
         std::cerr << "Error: Invalid attack deck name/hash " << att_deck_name << ".\n";
     }
-    else if(!att_deck->raid_cards.empty())
-    {
+    else if(!att_deck->raid_cards.empty()) {
         std::cerr << "Error: Invalid attack deck " << att_deck_name << ": has optional cards.\n";
         att_deck = nullptr;
     }
-    if(att_deck == nullptr)
-    {
+    if(att_deck == nullptr) {
         print_available_decks(decks, false);
-        return(5);
+        return -5;
     }
 
     for(const auto & deck_parsed: deck_list_parsed) {
         Deck* def_deck{nullptr};
-        try
-        {
+
+        try {
             def_deck = find_deck(decks, cards, deck_parsed.first);
         }
-        catch(const std::runtime_error& e)
-        {
+        catch(const std::runtime_error& e) {
             std::cerr << "Error: Deck " << deck_parsed.first << ": " << e.what() << std::endl;
-            return(5);
+            return -5;
         }
-        if(def_deck == nullptr)
-        {
+        if(def_deck == nullptr) {
             std::cerr << "Error: Invalid defense deck name/hash " << deck_parsed.first << ".\n";
             print_available_decks(decks, true);
-            return(5);
+            return -5;
         }
         if(def_deck->decktype == DeckType::raid)
         {
@@ -1139,12 +1130,8 @@ int main(int argc, char** argv)
     }
 
     std::map<std::string, int> effect_map;
-    for(unsigned i(0); i < Effect::num_effects; ++i)
-    {
-        effect_map[effect_names[i]] = i;
-        std::stringstream ss;
-        ss << i;
-        effect_map[ss.str()] = i;
+    for (size_t index(0); index < Effect::num_effects; ++index) {
+        effect_map[effect_names[index]] = index;
     }
 
     for(int argIndex(3); argIndex < argc; ++argIndex)
@@ -1197,11 +1184,10 @@ int main(int argc, char** argv)
         {
             std::string arg_effect(argv[argIndex + 1]);
             auto x = effect_map.find(arg_effect);
-            if(x == effect_map.end())
-            {
-                std::cout << "The effect '" << arg_effect << "' was not found. ";
+            if(x == effect_map.end()) {
+                std::cerr << "Effect '" << arg_effect << "' not found." << std::endl;
                 print_available_effects();
-                return(6);
+                return -6;
             }
             effect = static_cast<enum Effect>(x->second);
             argIndex += 1;

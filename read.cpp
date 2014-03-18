@@ -24,9 +24,16 @@ std::vector<std::pair<std::string, long double>> parse_deck_list(std::string lis
     boost::tokenizer<boost::char_delimiters_separator<char>> list_tokens{list_string, boost::char_delimiters_separator<char>{false, ";", ""}};
     for(const auto list_token: list_tokens) {
         boost::tokenizer<boost::char_delimiters_separator<char>> deck_tokens{list_token, boost::char_delimiters_separator<char>{false, ":", ""}};
+
         auto deck_token = deck_tokens.begin();
-        res.push_back(std::make_pair(*deck_token, 1.0d));
+
+        auto pair = std::make_pair(*deck_token, 1.0d);
+        boost::algorithm::trim(pair.first);
+
+        res.push_back(pair);
+
         ++deck_token;
+
         if(deck_token != deck_tokens.end()) {
             res.back().second = boost::lexical_cast<long double>(*deck_token);
         }

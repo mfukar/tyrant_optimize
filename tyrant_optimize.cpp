@@ -1069,8 +1069,7 @@ int main(int argc, char** argv)
     load_decks(decks, cards);
     fill_skill_table();
 
-    if(argc <= 2)
-    {
+    if(argc <= 2) {
         print_available_decks(decks, true);
         return(4);
     }
@@ -1090,10 +1089,10 @@ int main(int argc, char** argv)
     }
     catch(const std::runtime_error& e) {
         std::cerr << "Error: Deck " << att_deck_name << ": " << e.what() << std::endl;
-        return(5);
+        return -5;
     }
     if(att_deck == nullptr) {
-        std::cerr << "Error: Invalid attack deck name/hash " << att_deck_name << ".\n";
+        std::cerr << "Error: Invalid attack deck name/hash: <" << att_deck_name << ">\n";
     }
     else if(!att_deck->raid_cards.empty()) {
         std::cerr << "Error: Invalid attack deck " << att_deck_name << ": has optional cards.\n";
@@ -1132,7 +1131,9 @@ int main(int argc, char** argv)
     /* Map effect names to their IDs: */
     std::map<std::string, Effect> effect_map;
     for (size_t id(0); id < Effect::num_effects; ++id) {
-        effect_map[effect_names[id]] = static_cast<Effect>(id);
+        auto name = effect_names[id];
+        std::transform(name.begin(), name.end(), name.begin(), ::tolower);
+        effect_map[name] = static_cast<Effect>(id);
     }
 
     for(int argIndex(3); argIndex < argc; ++argIndex)
@@ -1182,9 +1183,11 @@ int main(int argc, char** argv)
         }
         else if(strcmp(argv[argIndex], "-e") == 0) {
             std::string arg_effect(argv[argIndex + 1]);
+            std::transform(arg_effect.begin(), arg_effect.end(), arg_effect.begin(), ::tolower);
+
             auto x = effect_map.find(arg_effect);
             if(x == effect_map.end()) {
-                std::cerr << "Effect '" << arg_effect << "' not found." << std::endl;
+                std::cerr << "Error: Effect '" << arg_effect << "' not found." << std::endl;
                 print_available_effects();
                 return -6;
             }

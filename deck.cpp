@@ -40,24 +40,18 @@ std::string deck_hash(const Card* commander, std::vector<const Card*> cards, boo
     }
     unsigned last_id = 0;
     unsigned num_repeat = 0;
-    for(const Card* card: cards)
-    {
+    for(const auto & card : cards) {
         unsigned card_id(card->m_id);
-        if(card_id == last_id)
-        {
+        if(card_id == last_id) {
             ++ num_repeat;
-        }
-        else
-        {
-            if(num_repeat > 1)
-            {
+        } else {
+            if(num_repeat > 1) {
                 ios << base64[(num_repeat + 4000) / 64];
                 ios << base64[(num_repeat + 4000) % 64];
             }
             last_id = card_id;
             num_repeat = 1;
-            if(card_id > 4000)
-            {
+            if(card_id > 4000) {
                 ios << '-';
                 card_id -= 4000;
             }
@@ -65,8 +59,7 @@ std::string deck_hash(const Card* commander, std::vector<const Card*> cards, boo
             ios << base64[card_id % 64];
         }
     }
-    if(num_repeat > 1)
-    {
+    if(num_repeat > 1) {
         ios << base64[(num_repeat + 4000) / 64];
         ios << base64[(num_repeat + 4000) % 64];
     }
@@ -79,29 +72,27 @@ const char* base64_chars =
     "abcdefghijklmnopqrstuvwxyz"
     "0123456789+/";
 
-// Converts cards in `hash' to a deck.
-// Stores resulting card IDs in `ids'.
+/**
+ * Converts cards in HASH to a deck.
+ * Stores resulting card IDs in IDS.
+ */
 void hash_to_ids(const char* hash, std::vector<unsigned>& ids)
 {
     unsigned int last_id = 0;
     const char* pc = hash;
 
-    while(*pc)
-    {
+    while(*pc) {
         unsigned id_plus = 0;
-        if(*pc == '-')
-        {
+        if(*pc == '-') {
             ++ pc;
             id_plus = 4000;
         }
-        if(!*pc || !*(pc + 1))
-        {
+        if(!*pc || !*(pc + 1)) {
             throw std::runtime_error("Invalid hash length");
         }
         const char* p0 = strchr(base64_chars, *pc);
         const char* p1 = strchr(base64_chars, *(pc + 1));
-        if (!p0 || !p1)
-        {
+        if (!p0 || !p1) {
             throw std::runtime_error("Invalid hash character");
         }
         pc += 2;
@@ -109,15 +100,15 @@ void hash_to_ids(const char* hash, std::vector<unsigned>& ids)
         size_t index1 = p1 - base64_chars;
         unsigned int id = (index0 << 6) + index1;
 
-        if (id < 4001)
-        {
+        if (id < 4001) {
             id += id_plus;
             ids.push_back(id);
             last_id = id;
         }
-        else for (unsigned int j = 0; j < id - 4001; ++j)
-        {
-            ids.push_back(last_id);
+        else {
+            for (unsigned int j = 0; j < id - 4001; ++j) {
+                ids.push_back(last_id);
+            }
         }
     }
 }
@@ -126,20 +117,15 @@ const std::pair<std::vector<unsigned>, std::map<signed, char>> string_to_ids(con
 {
     std::vector<unsigned> card_ids;
     std::map<signed, char> card_marks;
-    if(deck_string.find_first_of(":,") == std::string::npos)
-    {
-        try
-        {
+    if(deck_string.find_first_of(":,") == std::string::npos) {
+        try {
             hash_to_ids(deck_string.c_str(), card_ids);
         }
-        catch(std::exception& e)
-        {
+        catch(const std::exception& e) {
             std::cerr << "Error while resolving " << description << ": " << e.what() << std::endl;
             throw;
         }
-    }
-    else
-    {
+    } else {
         boost::tokenizer<boost::char_delimiters_separator<char>> deck_tokens{deck_string, boost::char_delimiters_separator<char>{false, ":,", ""}};
         auto token_iter = deck_tokens.begin();
         signed p = -1;
@@ -161,7 +147,7 @@ const std::pair<std::vector<unsigned>, std::map<signed, char>> string_to_ids(con
                     ++ p;
                 }
             }
-            catch(std::exception& e)
+            catch(const std::exception& e)
             {
                 std::cerr << "Warning while resolving " << description << ": " << e.what() << std::endl;
                 continue;
@@ -233,12 +219,9 @@ std::string Deck::short_description() const
     ios << decktype_names[decktype];
     if(id > 0) { ios << " #" << id; }
     if(!name.empty()) { ios << " \"" << name << "\""; }
-    if(deck_string.empty())
-    {
+    if(deck_string.empty()) {
         if(raid_cards.empty()) { ios << ": " << deck_hash(commander, cards, strategy == DeckStrategy::ordered || strategy == DeckStrategy::exact_ordered); }
-    }
-    else
-    {
+    } else {
         ios << ": " << deck_string;
     }
     return ios.str();

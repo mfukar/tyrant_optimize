@@ -24,5 +24,6 @@ struct Cards
 };
 
 std::string simplify_name(const std::string& card_name);
+std::string card_description(const Cards& cards, const Card* c);
 
 #endif

@@ -227,37 +227,31 @@ std::string Deck::short_description() const
     return ios.str();
 }
 
-extern std::string card_description(const Cards& cards, const Card* c);
-
 std::string Deck::long_description(const Cards& all_cards) const
 {
     std::stringstream ios;
     ios << short_description() << std::endl;
-    if(effect != Effect::none)
-    {
+    if(effect != Effect::none) {
         ios << "Effect: " << effect_names[effect] << "\n";
     }
-    if(commander)
-    {
+
+    if(commander) {
         ios << card_description(all_cards, commander) << "\n";
-    }
-    else
-    {
+    } else {
         ios << "No commander\n";
     }
-    if(!cards.empty() && !raid_cards.empty())
-    {
+
+    if(!cards.empty() && !raid_cards.empty()) {
         ios << "Always include:\n";
     }
-    for(const Card* card: cards)
-    {
+
+    for(const auto & card: cards) {
         ios << "  " << card_description(all_cards, card) << "\n";
     }
-    for(auto& pool: raid_cards)
-    {
+
+    for(const auto & pool: raid_cards) {
         ios << pool.first << " from:\n";
-        for(auto& card: pool.second)
-        {
+        for(const auto & card: pool.second) {
             ios << "  " << card_description(all_cards, card) << "\n";
         }
     }
@@ -266,13 +260,13 @@ std::string Deck::long_description(const Cards& all_cards) const
 
 Deck* Deck::clone() const
 {
-    return(new Deck(*this));
+    return new Deck(*this);
 }
 
 
 const Card* Deck::get_commander()
 {
-    return(commander);
+    return commander;
 }
 
 const Card* Deck::next()

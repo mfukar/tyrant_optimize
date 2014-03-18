@@ -71,13 +71,13 @@ Deck* find_deck(Decks& decks, const Cards& cards, std::string deck_name)
     auto it = decks.by_name.find(deck_name);
     if(it != decks.by_name.end()) {
         it->second->resolve(cards);
-        return(it->second);
+        return it->second;
     }
     decks.decks.push_back(Deck{});
     Deck* deck = &decks.decks.back();
     deck->set(cards, deck_name);
     deck->resolve(cards);
-    return(deck);
+    return deck;
 }
 //---------------------- $80 deck optimization ---------------------------------
 
@@ -119,22 +119,18 @@ void claim_cards(const std::vector<const Card*> & card_list, const Cards & cards
 bool suitable_non_commander(const Deck& deck, unsigned slot, const Card* card)
 {
     assert(card->m_type != CardType::commander);
-    if(card->m_rarity == 4) // legendary - 1 per deck
-    {
-        for(unsigned i(0); i < deck.cards.size(); ++i)
-        {
-            if(i != slot && deck.cards[i]->m_rarity == 4)
-            {
+    if(card->m_rarity == 4) {
+        // legendary - 1 per deck
+        for(unsigned i(0); i < deck.cards.size(); ++i) {
+            if(i != slot && deck.cards[i]->m_rarity == 4) {
                 return false;
             }
         }
     }
-    if(card->m_unique) // unique - 1 card with same id per deck
-    {
-        for(unsigned i(0); i < deck.cards.size(); ++i)
-        {
-            if(i != slot && deck.cards[i]->m_base_id == card->m_base_id)
-            {
+    if(card->m_unique) {
+        // unique - 1 card with same id per deck
+        for(unsigned i(0); i < deck.cards.size(); ++i) {
+            if(i != slot && deck.cards[i]->m_base_id == card->m_base_id) {
                 return false;
             }
         }
@@ -144,8 +140,7 @@ bool suitable_non_commander(const Deck& deck, unsigned slot, const Card* card)
 
 unsigned get_deck_cost(const Deck * deck, const Cards & cards)
 {
-    if(!use_owned_cards)
-    {
+    if(!use_owned_cards) {
         return 0;
     }
     std::map<unsigned, unsigned> num_in_deck;
@@ -277,7 +272,7 @@ struct SimulationData
             Results<uint64_t> result(play(&fd));
             res.emplace_back(result);
         }
-        return(res);
+        return res;
     }
 };
 //------------------------------------------------------------------------------
@@ -343,7 +338,7 @@ public:
         main_barrier.wait();
         // wait for the threads
         main_barrier.wait();
-        return(std::make_pair(thread_results, thread_total));
+        return std::make_pair(thread_results, thread_total);
     }
 
     std::pair<std::vector<Results<uint64_t>> , unsigned> compare(unsigned num_iterations, long double prev_score)
@@ -358,7 +353,7 @@ public:
         main_barrier.wait();
         // wait for the threads
         main_barrier.wait();
-        return(std::make_pair(thread_results, thread_total));
+        return std::make_pair(thread_results, thread_total);
     }
 };
 //------------------------------------------------------------------------------
@@ -373,6 +368,7 @@ void thread_evaluate(boost::barrier& main_barrier,
         main_barrier.wait();
         sim.set_decks(p.att_deck, p.def_decks);
         if(destroy_threads) { return; }
+
         while(true)
         {
             shared_mutex.lock(); //<<<<
@@ -855,7 +851,7 @@ public:
 
     const std::vector<unsigned>& getIndices()
     {
-        return(indices);
+        return indices;
     }
 
     bool next()
@@ -863,19 +859,17 @@ public:
         // The end condition's a bit odd here, but index is unsigned.
         // The last iteration is when index = 0.
         // After that, index = max int, which is clearly >= choose.
-        for(index = choose - 1; index < choose; --index)
-        {
-            if(indices[index] < indicesLimits[index])
-            {
+        for(index = choose - 1; index < choose; --index) {
+            if(indices[index] < indicesLimits[index]) {
                 ++indices[index];
                 for(nextIndex = index + 1; nextIndex < choose; nextIndex++)
                 {
                     indices[nextIndex] = indices[index] - index + nextIndex;
                 }
-                return(false);
+                return false;
             }
         }
-        return(true);
+        return true;
     }
 
 private:
@@ -897,11 +891,10 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
     std::vector<const Card*> unique_cards;
     std::vector<const Card*> cards_to_combine;
     bool legendary_found(false);
-    for(unsigned card_index: card_indices)
-    {
+
+    for(const unsigned card_index : card_indices) {
         const Card* card(cards[card_index]);
-        if(card->m_unique || card->m_rarity == 4)
-        {
+        if(card->m_unique || card->m_rarity == 4) {
             if(card->m_rarity == 4)
             {
                 if(legendary_found) { return; }
@@ -909,16 +902,15 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
             }
             --num_cards_to_combine;
             unique_cards.push_back(card);
-        }
-        else
-        {
+        } else {
             cards_to_combine.push_back(card);
         }
     }
+
     // all unique or legendaries, quit
     if(cards_to_combine.size() == 0) { return; }
-    if(cards_to_combine.size() == 1)
-    {
+
+    if(cards_to_combine.size() == 1) {
         std::vector<const Card*> deck_cards = unique_cards;
         std::vector<const Card*> combined_cards(num_cards_to_combine, cards_to_combine[0]);
         deck_cards.insert(deck_cards.end(), combined_cards.begin(), combined_cards.end());
@@ -927,40 +919,31 @@ inline void try_all_ratio_combinations(unsigned deck_size, unsigned var_k, unsig
         (*dynamic_cast<Deck*>(proc.att_deck)) = deck;
         auto new_results = proc.compare(num_iterations, best_score.points);
         auto new_score = compute_score(new_results, proc.factors);
-        if(new_score.points > best_score.points)
-        {
+
+        if(new_score.points > best_score.points) {
             best_score = new_score;
             best_deck = deck;
             print_score_info(new_results, proc.factors);
             print_deck_inline(0, best_score, commander, deck_cards, false);
         }
-        //++num;
-        // num_cards = num_cards_to_combine ...
-    }
-    else
-    {
+    } else {
         var_k = cards_to_combine.size() - 1;
         Combination cardAmounts(num_cards_to_combine-1, var_k);
         bool finished(false);
-        while(!finished)
-        {
+        while(!finished) {
             const std::vector<unsigned>& indices = cardAmounts.getIndices();
             std::vector<unsigned> num_cards(var_k+1, 0);
             num_cards[0] = indices[0] + 1;
-            for(unsigned i(1); i < var_k; ++i)
-            {
+            for(unsigned i(1); i < var_k; ++i) {
                 num_cards[i] = indices[i] - indices[i-1];
             }
             num_cards[var_k] = num_cards_to_combine - (indices[var_k-1] + 1);
             std::vector<const Card*> deck_cards = unique_cards;
-            //std::cout << "num cards: ";
-            for(unsigned num_index(0); num_index < num_cards.size(); ++num_index)
-            {
-                //std::cout << num_cards[num_index] << " ";
-                for(unsigned i(0); i < num_cards[num_index]; ++i) { deck_cards.push_back(cards[card_indices[num_index]]); }
+
+            for(const auto num_index : num_cards) {
+                for(unsigned i(0); i < num_cards[num_index]; ++i) {
+                    deck_cards.push_back(cards[card_indices[num_index]]); }
             }
-            //std::cout << "\n" << std::flush;
-            //std::cout << std::flush;
             assert(deck_cards.size() == deck_size);
             Deck deck{};
             deck.set(commander, deck_cards);
@@ -1071,7 +1054,7 @@ int main(int argc, char** argv)
 
     if(argc <= 2) {
         print_available_decks(decks, true);
-        return(4);
+        return -1;
     }
     std::string att_deck_name{argv[1]};
     auto deck_list_parsed = parse_deck_list(argv[2]);
@@ -1089,7 +1072,7 @@ int main(int argc, char** argv)
     }
     catch(const std::runtime_error& e) {
         std::cerr << "Error: Deck " << att_deck_name << ": " << e.what() << std::endl;
-        return -5;
+        return -2;
     }
     if(att_deck == nullptr) {
         std::cerr << "Error: Invalid attack deck name/hash: <" << att_deck_name << ">\n";
@@ -1100,7 +1083,7 @@ int main(int argc, char** argv)
     }
     if(att_deck == nullptr) {
         print_available_decks(decks, false);
-        return -5;
+        return -3;
     }
 
     for(const auto & deck_parsed: deck_list_parsed) {
@@ -1111,15 +1094,15 @@ int main(int argc, char** argv)
         }
         catch(const std::runtime_error& e) {
             std::cerr << "Error: Deck " << deck_parsed.first << ": " << e.what() << std::endl;
-            return -5;
+            return -4;
         }
         if(def_deck == nullptr) {
             std::cerr << "Error: Invalid defense deck name/hash " << deck_parsed.first << ".\n";
             print_available_decks(decks, true);
-            return -5;
+            return -4;
         }
-        if(def_deck->decktype == DeckType::raid)
-        {
+
+        if(def_deck->decktype == DeckType::raid) {
             optimization_mode = OptimizationMode::raid;
             turn_limit = 30;
             target_score = 250;

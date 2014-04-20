@@ -27,6 +27,7 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/barrier.hpp>
 #include <boost/math/distributions/binomial.hpp>
+#include <boost/algorithm/string.hpp>
 #include "library.h"
 #include "deck.h"
 #include "achievement.h"
@@ -1056,7 +1057,10 @@ int main(int argc, char** argv)
         print_available_decks(decks, true);
         return -1;
     }
+
     std::string att_deck_name{argv[1]};
+    boost::algorithm::trim(att_deck_name);
+
     auto deck_list_parsed = parse_deck_list(argv[2]);
 
     Deck* att_deck{nullptr};

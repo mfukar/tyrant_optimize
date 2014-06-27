@@ -504,7 +504,7 @@ void print_results(const std::pair<std::vector<Results<uint64_t>> , unsigned>& r
 }
 
 //------------------------------------------------------------------------------
-void print_deck_inline(const unsigned deck_cost, const Results<long double> score, const Card *commander, std::vector<const Card*> cards, bool is_ordered)
+void print_deck_inline(const unsigned deck_cost, const Results<long double> score, const Card *commander, std::vector<const Card *> cards, bool is_ordered)
 {
     if(fund > 0) {
         std::cout << "$" << deck_cost << " ";
@@ -532,7 +532,7 @@ void print_deck_inline(const unsigned deck_cost, const Results<long double> scor
     }
     std::string last_name;
     unsigned num_repeat(0);
-    for(const Card* card: cards) {
+    for(const auto & card : cards) {
         if(card->m_name == last_name) {
             ++ num_repeat;
         } else {
@@ -580,7 +580,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
         if(!card_marks.count(-1))
         {
             /* Evaluate all commanders for this deck, first. */
-            for(const Card* commander_candidate: proc.cards.player_commanders) {
+            for(const auto & commander_candidate: proc.cards.player_commanders) {
                 // Various checks to check if the card is accepted
                 assert(commander_candidate->m_type == CardType::commander);
                 if(commander_candidate->m_name == best_commander->m_name) { continue; }
@@ -615,7 +615,7 @@ void hill_climbing(unsigned num_iterations, Deck* d1, Process& proc, std::map<si
             d1->commander = best_commander;
         }
         std::shuffle(non_commander_cards.begin(), non_commander_cards.end(), re);
-        for(const Card* card_candidate: non_commander_cards)
+        for(const auto & card_candidate: non_commander_cards)
         {
             d1->cards = best_cards;
             if(card_candidate)
@@ -706,7 +706,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
         }
 
         if(!card_marks.count(-1)) {
-            for(const Card* commander_candidate: proc.cards.player_commanders)
+            for(const auto & commander_candidate: proc.cards.player_commanders)
             {
                 if (best_score.points - target_score > -1e-9) { break; }
                 // Various checks to check if the card is accepted
@@ -742,7 +742,7 @@ void hill_climbing_ordered(unsigned num_iterations, Deck* d1, Process& proc, std
             d1->commander = best_commander;
         }
         std::shuffle(non_commander_cards.begin(), non_commander_cards.end(), re);
-        for(const Card* card_candidate: non_commander_cards)
+        for(const auto & card_candidate: non_commander_cards)
         {
             // Various checks to check if the card is accepted
             assert(!card_candidate || card_candidate->m_type != CardType::commander);
